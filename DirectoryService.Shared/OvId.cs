@@ -1,6 +1,6 @@
-namespace DirectoryService.Core.Entities;
 
-public class UserPresence : BaseEntity
+
+public class UserPresence : String
 {
     public bool? Connected { get; set; }
     public string? DomainId { get; set; }

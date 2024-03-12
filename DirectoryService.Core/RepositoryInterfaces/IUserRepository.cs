@@ -7,6 +7,6 @@ public interface IUserRepository : IBaseRepository<User>
 {
     public Task<User?> FindByUsername(string username);
     public Task<User?> FindByEmail(string emailAddress);
-    public Task<PaginatedResult<User>> ListRelativeUsers(Guid relativeUser, PaginatedRequest page, bool includeSelf);
-    public Task<List<string>> UserIdsToUsernames(List<Guid> userIds);
+    public Task<PaginatedResult<User>> ListRelativeUsers(string relativeUser, PaginatedRequest page, bool includeSelf);
+    public Task<List<string>> UserIdsToUsernames(List<string> userIds);
 }

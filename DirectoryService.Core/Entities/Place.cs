@@ -9,7 +9,7 @@ public class Place : BaseEntity
     public DomainVisibility Visibility { get; set; }
     public MaturityRating Maturity { get; set; }
     public List<string>? Tags { get; set; }
-    public Guid DomainId { get; set; }
+    public string DomainId { get; set; }
     public string? Path { get; set; }
     public string? ThumbnailUrl { get; set; }
     public List<string>? ImageUrls { get; set; }

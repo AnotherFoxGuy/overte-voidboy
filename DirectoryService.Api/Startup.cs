@@ -122,8 +122,6 @@ public class Startup
         DbContext.Configure();
         
         _logger.LogInformation("---------- Server Starting ----------");
-        if (!DatabaseMigrator.MigrateDatabase(_logger))
-            return;
 
         // If Development then truncate data and seed dev data
         if (app.Environment.IsDevelopment())

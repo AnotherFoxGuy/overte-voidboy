@@ -1,4 +1,4 @@
-using DirectoryService.DAL.Infrastructure;
+// using DirectoryService.DAL.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectoryService.Tests;
@@ -13,9 +13,9 @@ public class TestBase
         _factory = new ApiWebApplicationFactory();
         _client = _factory.CreateClient();
         
-        var dbContext = _factory.Services.GetRequiredService<DbContext>();
+        // var dbContext = _factory.Services.GetRequiredService<DbContext>();
         
-        dbContext.RunScript("truncateAll.sql");
-        dbContext.RunScript("testSeed.sql");
+        // dbContext.RunScript("truncateAll.sql");
+        // dbContext.RunScript("testSeed.sql");
     }
 }
