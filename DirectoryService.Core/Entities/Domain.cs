@@ -12,8 +12,8 @@ public class Domain : BaseEntity
     public MaturityRating Maturity { get; set; }
     public DomainVisibility Visibility { get; set; }
     public string? PublicKey { get; set; }
-    public string SessionToken { get; set; }
-    public string OwnerUserId { get; set; }
+    public required string SessionToken { get; set; }
+    public required string OwnerUserId { get; set; }
     public string? IceServerAddress { get; set; }
     public string? Version { get; set; }
     public string? ProtocolVersion { get; set; }
@@ -29,4 +29,6 @@ public class Domain : BaseEntity
     public bool Active { get; set; }
     public int UserCount { get; set; }
     public int AnonCount { get; set; }
+
+    public List<string> DomainManagersIds { get; set; } = [];
 }

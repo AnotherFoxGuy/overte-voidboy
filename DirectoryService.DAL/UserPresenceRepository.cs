@@ -12,7 +12,7 @@ public class UserPresenceRepository(DbContext dbContext)
 {
     public async Task<UserPresence> Create(UserPresence entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         await con.StoreAsync(entity);
         await con.SaveChangesAsync();
         return entity;
@@ -20,14 +20,14 @@ public class UserPresenceRepository(DbContext dbContext)
 
     public override async Task<UserPresence?> Retrieve(string id)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         var entity = await con.LoadAsync<UserPresence>(id);
         return entity;
     }
     
     public async Task<UserPresence?> Update(UserPresence entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         await con.StoreAsync(entity);
         await con.SaveChangesAsync();
         return entity;

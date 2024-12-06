@@ -33,7 +33,7 @@ public sealed class UsersController : V1ApiController
     [Authorise]
     public async Task<IActionResult> GetUsers()
     {
-        var page = PaginatedRequest("username", true, "username");
+        var page = PaginatedRequest();
         var result = await _userService.ListRelativeUsers(page);
         return Success(new UserListModel(result));
     }

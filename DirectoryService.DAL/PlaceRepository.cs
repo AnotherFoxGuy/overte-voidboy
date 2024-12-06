@@ -11,7 +11,7 @@ public class PlaceRepository(DbContext dbContext) : BaseRepository<Place>(dbCont
 {
     public async Task<Place> Create(Place entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         await con.StoreAsync(entity);
         await con.SaveChangesAsync();
         return entity;
@@ -19,7 +19,7 @@ public class PlaceRepository(DbContext dbContext) : BaseRepository<Place>(dbCont
 
      public async Task<Place?> FindByName(string name)
      {
-         using var con = await DbContext.CreateConnectionAsync();
+         using var con = DbContext.CreateConnectionAsync();
          name = name.ToLower();
          var entity = con.Query<Place>().FirstOrDefault(x => x.Name.ToLower() == name);
 
@@ -28,7 +28,7 @@ public class PlaceRepository(DbContext dbContext) : BaseRepository<Place>(dbCont
 
      public async Task<Place?> Update(Place entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         await con.StoreAsync(entity);
         await con.SaveChangesAsync();
         return entity;

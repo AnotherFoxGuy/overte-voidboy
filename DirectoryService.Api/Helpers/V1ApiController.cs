@@ -79,36 +79,31 @@ public abstract class V1ApiController : ControllerBase
             throw new UnauthorisedApiException();
     }
 
-    protected PaginatedRequest PaginatedRequest(string? orderBy = null, bool orderAscending = true, string? searchOn = null)
+    protected PaginatedRequest PaginatedRequest()
     {
-        var paginationFilter = new PaginatedRequest()
-        {
-            OrderBy = orderBy,
-            OrderAscending = orderAscending,
-            SearchOn = searchOn
-        };
+        var paginationFilter = new PaginatedRequest();
         
         var queryParams =
             Request.Query.Keys.ToDictionary<string?, string, string>(key => key.ToLower(), key => Request.Query[key]!);
 
-        if (queryParams.ContainsKey("filter"))
-        {
-            foreach (var filter in queryParams["filter"].Split(","))
-            {
-                paginationFilter.Filter!.Add(filter);
-            }
-        }
-
-        if (queryParams.ContainsKey("status"))
-        {
-            foreach (var status in queryParams["status"].Split(",").ToList())
-            {
-                paginationFilter.Status!.Add(status);
-            }
-        }
-
-        if (queryParams.ContainsKey("search"))
-            paginationFilter.Search = queryParams["search"]!;
+        // if (queryParams.ContainsKey("filter"))
+        // {
+        //     foreach (var filter in queryParams["filter"].Split(","))
+        //     {
+        //         paginationFilter.Filter!.Add(filter);
+        //     }
+        // }
+        //
+        // if (queryParams.ContainsKey("status"))
+        // {
+        //     foreach (var status in queryParams["status"].Split(",").ToList())
+        //     {
+        //         paginationFilter.Status!.Add(status);
+        //     }
+        // }
+        //
+        // if (queryParams.ContainsKey("search"))
+        //     paginationFilter.Search = queryParams["search"]!;
 
         if (queryParams.ContainsKey("per_page"))
         {
@@ -122,11 +117,11 @@ public abstract class V1ApiController : ControllerBase
                 paginationFilter.Page = page;
         }
         
-        if (!queryParams.ContainsKey("asadmin")) 
-            return paginationFilter;
+        // if (!queryParams.ContainsKey("asadmin")) 
+        //     return paginationFilter;
 
-        if (bool.TryParse(queryParams["asadmin"], out var asAdmin))
-            paginationFilter.AsAdmin = asAdmin;
+        // if (bool.TryParse(queryParams["asadmin"], out var asAdmin))
+        //     paginationFilter.AsAdmin = asAdmin;
         
         return paginationFilter;
     }

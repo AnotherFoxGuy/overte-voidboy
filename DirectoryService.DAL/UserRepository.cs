@@ -1,4 +1,3 @@
-
 using DirectoryService.Core.Entities;
 using DirectoryService.Core.RepositoryInterfaces;
 using DirectoryService.DAL.Infrastructure;
@@ -16,7 +15,7 @@ public class UserRepository(DbContext dbContext) : BaseRepository<User>(dbContex
     /// </summary>
     public async Task<User> Create(User entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         // var id = await con.QuerySingleAsync<string>(
         //     @"INSERT INTO users (identityProvider, username, email, authVersion, authHash, activated, role, state, creatorIp)
         //         VALUES( @identityProvider, @username, @email, @authVersion, @authHash, @activated, @role, @state, @creatorIp )
@@ -65,13 +64,40 @@ public class UserRepository(DbContext dbContext) : BaseRepository<User>(dbContex
         // entity.FriendsGroup = friendsGroup;
         //
         // await Update(entity);
+        await con.StoreAsync(entity);
+        await con.SaveChangesAsync();
+
+        var connectionGroup = new UserGroup
+        {
+            OwnerUserId = entity.Id,
+            Internal = true,
+            Name = $"{entity.Username} Connections",
+            Description = $"{entity.Username} Connections",
+            Rating = MaturityRating.Everyone
+        };
+        await con.StoreAsync(connectionGroup);
         
+        var friendsGroup = new UserGroup
+        {
+            OwnerUserId = entity.Id,
+            Internal = true,
+            Name = $"{entity.Username} Friends",
+            Description = $"{entity.Username} Friends",
+            Rating = MaturityRating.Everyone
+        };
+        await con.StoreAsync(friendsGroup);
+        
+        entity.ConnectionGroup = connectionGroup.Id;
+        entity.FriendsGroup = friendsGroup.Id;
+        
+        await con.SaveChangesAsync();
+
         return entity;
     }
 
     public async Task<User?> Update(User entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con =  DbContext.CreateConnectionAsync();
         await con.StoreAsync(entity);
         await con.SaveChangesAsync();
         return entity;
@@ -80,22 +106,36 @@ public class UserRepository(DbContext dbContext) : BaseRepository<User>(dbContex
 
     public async Task<User?> FindByUsername(string username)
     {
-        using var con = await DbContext.CreateConnectionAsync();
-        username = username.ToLower();
-        var entity = con.Query<User>().FirstOrDefault(x => x.Username.ToLower() == username);
+        using var con = DbContext.CreateConnectionAsync();
+        var entity = await con.Query<User>().FirstOrDefaultAsync(x => x.Username == username);
 
         return entity;
     }
 
     public async Task<User?> FindByEmail(string emailAddress)
     {
-        using var con = await DbContext.CreateConnectionAsync();
-        var entity = con.Query<User>().FirstOrDefault(x => x.Email == emailAddress);
+        using var con = DbContext.CreateConnectionAsync();
+        var entity = await con.Query<User>().FirstOrDefaultAsync(x => x.Email == emailAddress);
 
         return entity;
     }
 
-    public async Task<PaginatedResult<User>> ListRelativeUsers(string relativeUser, PaginatedRequest page, bool includeSelf)
+    public async Task<PaginatedResult<User>> ConnectionsList(string relativeUser, PaginatedRequest page)
+    {
+        using var con = DbContext.CreateConnectionAsync();
+        var usernames = await con
+            .Include<User>(x => x.FriendsGroup)
+            .LoadAsync<User>(relativeUser);
+
+        return usernames.Select(x => x.Username).ToList()!;
+    }
+
+    public Task<PaginatedResult<User>> FriendsList(string relativeUser, PaginatedRequest page)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<PaginatedResult<User>> ListAllRelativeUsers(string relativeUser, PaginatedRequest page)
     {
 //         const string sqlTemplate = $@"SELECT * FROM (SELECT u.*, CASE WHEN u.id = @selfId THEN TRUE ELSE FALSE END AS self,
 //                       COALESCE(connections.isConnection, FALSE) AS connection,
@@ -121,7 +161,7 @@ public class UserRepository(DbContext dbContext) : BaseRepository<User>(dbContex
 
     public async Task<List<string>> UserIdsToUsernames(List<string> userIds)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         var usernames = await con.Query<User>()
             .Where(x => userIds.Contains(x.Username))
             .ToListAsync();

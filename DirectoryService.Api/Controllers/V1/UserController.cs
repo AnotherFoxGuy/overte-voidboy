@@ -131,9 +131,8 @@ public sealed class UserController : V1ApiController
     [Authorise]
     public async Task<IActionResult> GetUserConnections()
     {
-        var page = PaginatedRequest("username", true, "username");
-        page.Where.Add("connection", true);
-        var result = await _userService.ListRelativeUsers(page);
+        var page = PaginatedRequest();
+        var result = await _userService.GetConnectionsList(page);
         return Success(new UserListModel(result), result);
     }
 
@@ -166,9 +165,8 @@ public sealed class UserController : V1ApiController
     [Authorise]
     public async Task<IActionResult> GetFriends()
     {
-        var page = PaginatedRequest("username", true, "username");
-        page.Where.Add("friend", true);
-        var result = await _userService.ListRelativeUsers(page);
+        var page = PaginatedRequest();
+        var result = await _userService.GetFriendsList(page);
         return Success(new UserFriendsModel(result));
     }
 

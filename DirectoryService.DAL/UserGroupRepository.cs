@@ -1,4 +1,3 @@
-
 using DirectoryService.Core.Entities;
 using DirectoryService.Core.RepositoryInterfaces;
 using DirectoryService.DAL.Infrastructure;
@@ -11,7 +10,7 @@ public class UserGroupRepository(DbContext dbContext) : BaseRepository<UserGroup
 {
     public async Task<UserGroup> Create(UserGroup entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         // var id = await con.QuerySingleAsync<Guid>(
         //     @"INSERT INTO userGroups (ownerUserId, internal, name, description, rating)
         //         VALUES( @ownerUserId, @internal, @name, @description, @rating )
@@ -36,16 +35,18 @@ public class UserGroupRepository(DbContext dbContext) : BaseRepository<UserGroup
         //             UserId = entity.OwnerUserId
         //         });
 
-        return entity;
-    }
-    
-    public async Task<UserGroup?> Update(UserGroup entity)
-    {
-        using var con = await DbContext.CreateConnectionAsync();
+        entity.Members = [entity.OwnerUserId];
+
         await con.StoreAsync(entity);
         await con.SaveChangesAsync();
         return entity;
     }
 
-   
+    public async Task<UserGroup?> Update(UserGroup entity)
+    {
+        using var con = DbContext.CreateConnectionAsync();
+        await con.StoreAsync(entity);
+        await con.SaveChangesAsync();
+        return entity;
+    }
 }

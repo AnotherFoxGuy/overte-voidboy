@@ -20,7 +20,7 @@ public class SessionTokenRepository : BaseRepository<SessionToken>, ISessionToke
     /// </summary>
     public async Task<SessionToken> Create(SessionToken entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         await con.StoreAsync(entity);
         await con.SaveChangesAsync();
         return entity;
@@ -28,12 +28,15 @@ public class SessionTokenRepository : BaseRepository<SessionToken>, ISessionToke
 
     public async Task<SessionToken?> Update(SessionToken entity)
     {
-        throw new NotImplementedException();
+        using var con = DbContext.CreateConnectionAsync();
+        await con.StoreAsync(entity);
+        await con.SaveChangesAsync();
+        return entity;
     }
     
     public async Task<SessionToken?> FindByRefreshToken(string refreshToken)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         var entity = con.Query<SessionToken>().FirstOrDefault(x => x.RefreshToken == refreshToken);
 
         return entity;
@@ -41,7 +44,7 @@ public class SessionTokenRepository : BaseRepository<SessionToken>, ISessionToke
 
     public async Task ExpireTokens()
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         // await con.ExecuteAsync(@"DELETE FROM sessionTokens WHERE expires < CURRENT_TIMESTAMP");
         var tokens =  await con.Query<SessionToken>()
             .Where(x => x.Expires < DateTime.Now)

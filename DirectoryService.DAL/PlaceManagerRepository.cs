@@ -1,5 +1,6 @@
 
 using DirectoryService.Core.Entities;
+using DirectoryService.Core.Exceptions;
 using DirectoryService.Core.RepositoryInterfaces;
 using DirectoryService.DAL.Infrastructure;
 using DirectoryService.Shared;
@@ -10,54 +11,93 @@ namespace DirectoryService.DAL;
 [ScopedDependency]
 public class PlaceManagerRepository(DbContext dbContext) : BaseRepository<User>(dbContext), IPlaceManagerRepository
 {
-    // public async Task<PaginatedResult<User>> List(string placeId, PaginatedRequest page)
-    // {
-    //     const string sqlTemplate = @"SELECT * FROM (
-    //         SELECT u.* FROM users u JOIN placeManagers pm ON u.id = pm.userId
-    //         WHERE pm.placeId = @_pPlaceId) AS placeManagers";
-    //     var dynamicParameters = new DynamicParameters();
-    //     dynamicParameters.Add("_pPlaceId", placeId);
-    //     var result = await QueryDynamic(sqlTemplate, "placeManagers", page, dynamicParameters);
-    //     return result;
-    // }
-    //
-    // public async Task Add(string placeId, string userId)
-    // {
-    //     using var con = await DbContext.CreateConnectionAsync();
-    //     await con.ExecuteAsync(@"INSERT INTO placeManagers(placeId, userId) 
-    //                                 VALUES (@placeId, @userId) ON CONFLICT(placeId, userId) DO NOTHING;",
-    //         new
-    //         {
-    //             placeId,
-    //             userId
-    //         });
-    // }
-    //
-    // public async Task Add(string placeId, IEnumerable<string> userIds)
-    // {
-    //     using var con = await DbContext.CreateConnectionAsync();
-    //     await con.ExecuteAsync(@"INSERT INTO placeManagers(placeId, userId) 
-    //                                 VALUES (@placeId, @userId) ON CONFLICT(placeId, userId) DO NOTHING;",
-    //         userIds.Select(x => new { placeId, userId = x }).ToList());
-    // }
-    //
-    // public async Task Delete(string placeId, string userId)
-    // {
-    //     using var con = await DbContext.CreateConnectionAsync();
-    //     await con.ExecuteAsync(@"DELETE FROM placeManagers WHERE placeId = @placeId AND userId = @userIds",
-    //         new
-    //         {
-    //             placeId,
-    //             userId
-    //         });
-    // }
-    //
-    // public async Task Delete(string placeId, IEnumerable<string> userIds)
-    // {
-    //     using var con = await DbContext.CreateConnectionAsync();
-    //     await con.ExecuteAsync(@"DELETE FROM placeManagers WHERE placeId = @placeId AND userId = @userId",
-    //         userIds.Select(x => new { placeId, userId = x }).ToList());
-    // }
+    public async Task<PaginatedResult<User>> List(string placeId, PaginatedRequest page)
+    {
+        // const string sqlTemplate = @"SELECT * FROM (
+        //     SELECT u.* FROM users u JOIN placeManagers pm ON u.id = pm.userId
+        //     WHERE pm.placeId = @_pPlaceId) AS placeManagers";
+        // var dynamicParameters = new DynamicParameters();
+        // dynamicParameters.Add("_pPlaceId", placeId);
+        // var result = await QueryDynamic(sqlTemplate, "placeManagers", page, dynamicParameters);
+        // return result;
+        
+        throw new NotImplementedException();
+    }
+    
+    public async Task Add(string placeId, string userId)
+    {
+        using var con = DbContext.CreateConnectionAsync();
+        // await con.ExecuteAsync(@"INSERT INTO placeManagers(placeId, userId) 
+        //                             VALUES (@placeId, @userId) ON CONFLICT(placeId, userId) DO NOTHING;",
+        //     new
+        //     {
+        //         placeId,
+        //         userId
+        //     });
+        
+        var place = await con.LoadAsync<Place>(placeId);
+        if (place == null)
+            throw new PlaceNotFoundApiException();
+        
+        if (!place.PlaceManagersIds.Contains(userId))
+        {
+            place.PlaceManagersIds.Add(userId);
+            await con.SaveChangesAsync();
+        }
+    }
+    
+    public async Task Add(string placeId, IEnumerable<string> userIds)
+    {
+        using var con = DbContext.CreateConnectionAsync();
+        // await con.ExecuteAsync(@"INSERT INTO placeManagers(placeId, userId) 
+        //                             VALUES (@placeId, @userId) ON CONFLICT(placeId, userId) DO NOTHING;",
+        //     userIds.Select(x => new { placeId, userId = x }).ToList());
+        
+        var place = await con.LoadAsync<Place>(placeId);
+        if (place == null)
+            throw new PlaceNotFoundApiException();
+
+        foreach (var id in userIds)
+            if (!place.PlaceManagersIds.Contains(id))
+                place.PlaceManagersIds.Add(id);
+
+        await con.SaveChangesAsync();
+    }
+    
+    public async Task Delete(string placeId, string userId)
+    {
+        using var con = DbContext.CreateConnectionAsync();
+        // await con.ExecuteAsync(@"DELETE FROM placeManagers WHERE placeId = @placeId AND userId = @userIds",
+        //     new
+        //     {
+        //         placeId,
+        //         userId
+        //     });
+        
+        var place = await con.LoadAsync<Place>(placeId);
+        if (place == null)
+            throw new PlaceNotFoundApiException();
+
+        place.PlaceManagersIds.Remove(userId);
+
+        await con.SaveChangesAsync();
+    }
+    
+    public async Task Delete(string placeId, IEnumerable<string> userIds)
+    {
+        using var con = DbContext.CreateConnectionAsync();
+        // await con.ExecuteAsync(@"DELETE FROM placeManagers WHERE placeId = @placeId AND userId = @userId",
+        //     userIds.Select(x => new { placeId, userId = x }).ToList());
+        
+        var place = await con.LoadAsync<Place>(placeId);
+        if (place == null)
+            throw new PlaceNotFoundApiException();
+
+        foreach (var id in userIds)
+            place.PlaceManagersIds.Remove(id);
+
+        await con.SaveChangesAsync();
+    }
 
     [Obsolete("Use List(string, PaginatedRequest) instead")]
     public override Task<PaginatedResult<User>> List(PaginatedRequest request)
@@ -91,31 +131,6 @@ public class PlaceManagerRepository(DbContext dbContext) : BaseRepository<User>(
 
     [Obsolete("Use Delete(string, IEnumerable<string>) instead")]
     public override Task Delete(IEnumerable<string> entityIds)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<PaginatedResult<User>> List(string placeId, PaginatedRequest page)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task Add(string placeId, string userId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task Add(string placeId, IEnumerable<string> userIds)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task Delete(string placeId, string userId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task Delete(string placeId, IEnumerable<string> userId)
     {
         throw new NotImplementedException();
     }

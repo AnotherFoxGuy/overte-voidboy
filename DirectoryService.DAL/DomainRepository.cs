@@ -11,7 +11,7 @@ public class DomainRepository(DbContext db) : BaseRepository<Domain>(db), IDomai
 {
     public async Task<Domain> Create(Domain entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         await con.StoreAsync(entity);
         await con.SaveChangesAsync();
         return entity;
@@ -19,7 +19,7 @@ public class DomainRepository(DbContext db) : BaseRepository<Domain>(db), IDomai
 
     public async Task<Domain?> FindByName(string name)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         name = name.ToLower();
         var entity = con.Query<Domain>().FirstOrDefault(x => x.Name.ToLower() == name);
 
@@ -28,7 +28,7 @@ public class DomainRepository(DbContext db) : BaseRepository<Domain>(db), IDomai
     
     public async Task<Domain?> Update(Domain entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         await con.StoreAsync(entity);
         await con.SaveChangesAsync();
         return entity;

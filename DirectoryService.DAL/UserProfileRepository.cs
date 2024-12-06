@@ -11,7 +11,7 @@ public class UserProfileRepository(DbContext dbContext) : BaseRepository<UserPro
 {
     public async Task<UserProfile> Create(UserProfile entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         await con.StoreAsync(entity);
         await con.SaveChangesAsync();
         return entity;
@@ -19,14 +19,14 @@ public class UserProfileRepository(DbContext dbContext) : BaseRepository<UserPro
 
     public override async Task<UserProfile?> Retrieve(string id)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         var entity = await con.LoadAsync<UserProfile>(id);
         return entity;
     }
     
     public async Task<UserProfile?> Update(UserProfile entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         await con.StoreAsync(entity);
         await con.SaveChangesAsync();
         return entity;

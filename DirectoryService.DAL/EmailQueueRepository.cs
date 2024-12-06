@@ -12,7 +12,7 @@ public class EmailQueueEntityRepository(DbContext db) : BaseRepository<QueuedEma
 {
     public async Task<QueuedEmail> Create(QueuedEmail entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         await con.StoreAsync(entity);
         await con.SaveChangesAsync();
         return entity;
@@ -21,7 +21,7 @@ public class EmailQueueEntityRepository(DbContext db) : BaseRepository<QueuedEma
 
     public async Task<IEnumerable<QueuedEmail>> GetNextQueuedEmails(int limit = 1000)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         // var emails = await con.QueryAsync<QueuedEmail>(
         //     @"SELECT * FROM emailQueue WHERE sent = FALSE
         //          AND sendOn < CURRENT_TIMESTAMP ORDER BY sendOn LIMIT @limit",
@@ -39,7 +39,7 @@ public class EmailQueueEntityRepository(DbContext db) : BaseRepository<QueuedEma
     
     public async Task<QueuedEmail?> Update(QueuedEmail entity)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         await con.StoreAsync(entity);
         await con.SaveChangesAsync();
         return entity;
@@ -47,7 +47,7 @@ public class EmailQueueEntityRepository(DbContext db) : BaseRepository<QueuedEma
 
     public async Task ClearSentEmails(DateTime cutoffDate)
     {
-        using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         // await con.ExecuteAsync(
         //     @"DELETE FROM emailQueue WHERE sent=TRUE AND sentOn < @cutoffDate", new
         //     {

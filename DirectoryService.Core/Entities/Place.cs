@@ -17,4 +17,7 @@ public class Place : BaseEntity
     public string SessionToken { get; set; }
     public string? CreatorIp { get; set; }
     public DateTime LastActivity { get; set; }
+
+    public List<string> PlaceManagersIds { get; set; } = [];
+
 }

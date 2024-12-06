@@ -3,6 +3,7 @@ using DirectoryService.Shared.Attributes;
 using DirectoryService.Shared.Config;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
+using Raven.Client.ServerWide.Operations;
 
 namespace DirectoryService.DAL.Infrastructure;
 
@@ -10,48 +11,25 @@ namespace DirectoryService.DAL.Infrastructure;
 // ReSharper disable once ClassNeverInstantiated.Global
 public class DbContext
 {
-    private readonly string? _dbConnectionUrl;
+    private readonly string[]? _dbConnectionUrls;
     private readonly string? _dbName;
+    
+    private DocumentStore _store;
 
     public DbContext()
     {
-        _dbConnectionUrl = ServiceConfigurationContainer.Config.Db!.ConnectionUrl;
-        _dbName = ServiceConfigurationContainer.Config.Db!.DatabaseName;
-    }
-
-    public async Task<IAsyncDocumentSession> CreateConnectionAsync()
-    {
-        // var connection = new NpgsqlConnection(_dbConnectionString);
-        var documentstore = new DocumentStore
+        _dbConnectionUrls = ServiceConfigurationContainer.Config.Db!.ConnectionUrls ??  ["http://localhost:8080"];
+        _dbName = ServiceConfigurationContainer.Config.Db!.DatabaseName ?? "DirectoryServiceTest";
+        _store = new DocumentStore
         {
-            Urls = new[] { _dbConnectionUrl },
+            Urls = _dbConnectionUrls,
             Database = _dbName,
         };
-        documentstore.Initialize();
-        return documentstore.OpenAsyncSession();
-    }
-    
-    public IDocumentSession CreateConnection()
-    {
-        var documentstore = new DocumentStore
-        {
-            Urls = new[] { _dbConnectionUrl },
-            Database = _dbName,
-        };
-        documentstore.Initialize();
-        return documentstore.OpenSession();
+        _store.Initialize();
     }
 
-    public void RunScript(string filename)
-    {
-        // using var con = CreateConnection();
-        // var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-        // var baseDir = Path.Combine(Path.GetDirectoryName(assembly.Location)!, "Scripts/");
-        // if (!File.Exists(baseDir + "/" + filename))
-        //     throw new FileNotFoundException("File not found", baseDir + "/" + filename);
-        // var script = File.ReadAllText(baseDir + "/" + filename);
-        // con.Execute(script);
-    }
+    public IAsyncDocumentSession CreateConnectionAsync() => _store.OpenAsyncSession();
+    public IDocumentSession CreateConnection() => _store.OpenSession();
 
     public static void Configure()
     {

@@ -137,9 +137,9 @@ public class Startup
                 Thread.Sleep(5000);
             }
 
-            dbContext.RunScript("truncateAll.sql");
-            _logger.LogInformation("Database truncated. Seeding dev data");
-            dbContext.RunScript("devSeed.sql");
+            // dbContext.RunScript("truncateAll.sql");
+            // _logger.LogInformation("Database truncated. Seeding dev data");
+            // dbContext.RunScript("devSeed.sql");
         }
         
         // Setup scheduled jobs

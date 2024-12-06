@@ -127,21 +127,52 @@ public sealed class UserService
     /// <summary>
     /// Fetch a list of users relative to the requester session
     /// </summary>
+    public async Task<PaginatedResult<UserSearchResultDto>> GetConnectionsList(PaginatedRequest page)
+    {
+        var session = await _sessionProvider.GetRequesterSession();
+        if (session is null) throw new UnauthorisedApiException();
+
+        var requestedBy = await _sessionProvider.GetRequesterSession();
+        var users = await _userRepository.ConnectionsList(requestedBy!.UserId, page);
+
+        var result = await UserDataToDto(users.Data!);
+        return new PaginatedResult<UserSearchResultDto>(result, users);
+    }
+    
+    /// <summary>
+    /// Fetch a list of users relative to the requester session
+    /// </summary>
+    public async Task<PaginatedResult<UserSearchResultDto>> GetFriendsList(PaginatedRequest page)
+    {
+        var session = await _sessionProvider.GetRequesterSession();
+        if (session is null) throw new UnauthorisedApiException();
+
+        var requestedBy = await _sessionProvider.GetRequesterSession();
+        var users = await _userRepository.FriendsList(requestedBy!.UserId, page);
+
+        var result = await UserDataToDto(users.Data!);
+        return new PaginatedResult<UserSearchResultDto>(result, users);
+    }   
+    
+    /// <summary>
+    /// Fetch a list of users relative to the requester session
+    /// </summary>
     public async Task<PaginatedResult<UserSearchResultDto>> ListRelativeUsers(PaginatedRequest page)
     {
         var session = await _sessionProvider.GetRequesterSession();
         if (session is null) throw new UnauthorisedApiException();
 
-        if (!session.AsAdmin || (page.Filter != null && page.Filter.Contains("connections")))
-            page.Where.Add("connection", true);
-
-        if (page.Filter != null && page.Filter.Contains("friends"))
-            page.Where.Add("friend", true);
-
         var requestedBy = await _sessionProvider.GetRequesterSession();
-        var users = await _userRepository.ListRelativeUsers(requestedBy!.UserId, page, true);
+        var users = await _userRepository.ListAllRelativeUsers(requestedBy!.UserId, page);
+
+        var result = await UserDataToDto(users.Data!);
+        return new PaginatedResult<UserSearchResultDto>(result, users);
+    }
+
+    private async Task<List<UserSearchResultDto>> UserDataToDto(IEnumerable<User> usersData)
+    {
         var result = new List<UserSearchResultDto>();
-        foreach (var user in users.Data!)
+        foreach (var user in usersData)
         {
             var profile = await _userProfileRepository.Retrieve(user.Id);
             result.Add(new UserSearchResultDto()
@@ -173,8 +204,7 @@ public sealed class UserService
                 }
             });
         }
-
-        return new PaginatedResult<UserSearchResultDto>(result, users);
+        return result;
     }
 
     /// <summary>

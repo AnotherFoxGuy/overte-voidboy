@@ -1,5 +1,5 @@
-
 using DirectoryService.Core.Entities;
+using DirectoryService.Core.Exceptions;
 using DirectoryService.Core.RepositoryInterfaces;
 using DirectoryService.DAL.Infrastructure;
 using DirectoryService.Shared;
@@ -24,7 +24,7 @@ public class DomainManagerRepository(DbContext dbContext) : BaseRepository<User>
 
     public async Task Add(string domainId, string userId)
     {
-        // using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         // await con.ExecuteAsync(@"INSERT INTO domainManagers(domainId, userId) 
         //                             VALUES (@domainId, @userId) ON CONFLICT(domainId, userId) DO NOTHING;",
         //     new
@@ -32,36 +32,64 @@ public class DomainManagerRepository(DbContext dbContext) : BaseRepository<User>
         //         domainId,
         //         userId
         //     });
-        throw new NotImplementedException();
+        var domain = await con.LoadAsync<Domain>(domainId);
+        if (domain == null)
+            throw new DomainNotFoundApiException();
+        if (!domain.DomainManagersIds.Contains(userId))
+        {
+            domain.DomainManagersIds.Add(userId);
+            await con.SaveChangesAsync();
+        }
     }
 
     public async Task Add(string domainId, IEnumerable<string> userIds)
     {
-        // using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         // await con.ExecuteAsync(@"INSERT INTO domainManagers(domainId, userId) 
         //                             VALUES (@domainId, @userId) ON CONFLICT(domainId, userId) DO NOTHING;",
         //     userIds.Select(x => new { domainId, userId = x }).ToList());
-        throw new NotImplementedException();
+        var domain = await con.LoadAsync<Domain>(domainId);
+        if (domain == null)
+            throw new DomainNotFoundApiException();
+
+        foreach (var id in userIds)
+            if (!domain.DomainManagersIds.Contains(id))
+                domain.DomainManagersIds.Add(id);
+
+        await con.SaveChangesAsync();
     }
 
     public async Task Delete(string domainId, string userId)
     {
-        // using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         // await con.ExecuteAsync(@"DELETE FROM domainManagers WHERE domainId = @domainId AND userId = @userIds",
         //     new
         //     {
         //         domainId,
         //         userId
         //     });
-        throw new NotImplementedException();
+        var domain = await con.LoadAsync<Domain>(domainId);
+        if (domain == null)
+            throw new DomainNotFoundApiException();
+
+        domain.DomainManagersIds.Remove(userId);
+
+        await con.SaveChangesAsync();
     }
 
     public async Task Delete(string domainId, IEnumerable<string> userIds)
     {
-        // using var con = await DbContext.CreateConnectionAsync();
+        using var con = DbContext.CreateConnectionAsync();
         // await con.ExecuteAsync(@"DELETE FROM domainManagers WHERE domainId = @domainId AND userId = @userId",
         //     userIds.Select(x => new { domainId, userId = x }).ToList());
-        throw new NotImplementedException();
+        var domain = await con.LoadAsync<Domain>(domainId);
+        if (domain == null)
+            throw new DomainNotFoundApiException();
+
+        foreach (var id in userIds)
+            domain.DomainManagersIds.Remove(id);
+
+        await con.SaveChangesAsync();
     }
 
     [Obsolete("Use List(string, PaginatedRequest) instead")]
@@ -99,6 +127,4 @@ public class DomainManagerRepository(DbContext dbContext) : BaseRepository<User>
     {
         throw new NotImplementedException();
     }
-    
-    
 }

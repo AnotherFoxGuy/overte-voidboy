@@ -26,6 +26,7 @@ public class UserGroupTests : TestBase
         var group = await userGroupService.Create(user!.Id, new UserGroup()
         {
             Name = "Test Group",
+            OwnerUserId = user!.Id,
             Description = "This is my test group",
             Rating = MaturityRating.Everyone,
             Internal = false
@@ -92,6 +93,7 @@ public class UserGroupTests : TestBase
         var newGroup = await userGroupService.Create(user1!.Id, new UserGroup()
         {
             Name = "Test Group",
+            OwnerUserId = user1!.Id,
             Description = "This is my test group",
             Rating = MaturityRating.Everyone,
             Internal = false
