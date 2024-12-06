@@ -5,9 +5,9 @@ namespace DirectoryService.Core.RepositoryInterfaces;
 
 public interface IUserGroupMembersRepository : IBaseRepository<User>
 {
-    public Task<PaginatedResult<User>> List(Guid groupId, PaginatedRequest page);
-    public Task Add(Guid groupId, Guid userId);
-    public Task Add(Guid groupId, IEnumerable<Guid> userIds);
-    public Task Delete(Guid groupId, Guid userId);
-    public Task Delete(Guid groupId, IEnumerable<Guid> userId);
+    public Task<PaginatedResult<User>> List(string groupId, PaginatedRequest page);
+    public Task Add(string groupId, string userId);
+    public Task Add(string groupId, IEnumerable<string> userIds);
+    public Task Delete(string groupId, string userId);
+    public Task Delete(string groupId, IEnumerable<string> userId);
 }

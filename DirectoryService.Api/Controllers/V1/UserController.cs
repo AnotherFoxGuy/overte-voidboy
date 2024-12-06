@@ -55,9 +55,9 @@ public sealed class UserController : V1ApiController
     /// <summary>
     /// Fetch information for owned place
     /// </summary>
-    [HttpGet("places/{placeId:guid}")]
+    [HttpGet("places/{placeId:string}")]
     [Authorise]
-    public async Task<IActionResult> GetUserPlace(Guid placeId)
+    public async Task<IActionResult> GetUserPlace(string placeId)
     {
         //TODO
         throw new NotImplementedException();
@@ -83,9 +83,9 @@ public sealed class UserController : V1ApiController
     /// <summary>
     /// Delete owned place
     /// </summary>
-    [HttpDelete("places/{placeId:guid}")]
+    [HttpDelete("places/{placeId:string}")]
     [Authorise]
-    public async Task<IActionResult> DeletePlace(Guid placeId)
+    public async Task<IActionResult> DeletePlace(string placeId)
     {
         await _placeService.DeletePlace(placeId);
         return Success();
@@ -94,9 +94,9 @@ public sealed class UserController : V1ApiController
     /// <summary>
     /// Legacy - Update owned place
     /// </summary>
-    [HttpPut("places/{placeId:guid}")]
+    [HttpPut("places/{placeId:string}")]
     [Authorise]
-    public async Task<IActionResult> UpdateUserPlace(Guid placeId)
+    public async Task<IActionResult> UpdateUserPlace(string placeId)
     {
         //TODO
         throw new NotImplementedException();
@@ -240,7 +240,7 @@ public sealed class UserController : V1ApiController
                 AccountId = profile.UserId,
                 Username = profile.Username,
                 DiscourseApiKey = "",
-                WalletId = Guid.Empty,
+                WalletId = string.Empty,
                 XmppPassword = ""
             }
         });
@@ -248,11 +248,11 @@ public sealed class UserController : V1ApiController
 
     public class UserProfileModel
     {
-        [JsonPropertyName("accountId")] public Guid AccountId { get; set; }
+        [JsonPropertyName("accountId")] public string AccountId { get; set; }
         public string? Username { get; set; }
         public string? XmppPassword { get; set; }
         public string? DiscourseApiKey { get; set; }
-        public Guid WalletId { get; set; }
+        public string WalletId { get; set; }
     }
 
     /// <summary>

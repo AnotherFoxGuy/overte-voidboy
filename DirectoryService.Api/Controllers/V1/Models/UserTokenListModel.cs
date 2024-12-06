@@ -43,16 +43,16 @@ public class UserTokenListModel
     public class TokenModel
     {
         [JsonPropertyName("id")] 
-        public Guid Id { get; set; }
+        public string Id { get; set; }
         
         [JsonPropertyName("tokenid")]
-        public Guid TokenId { get; set; }
+        public string TokenId { get; set; }
         
         [JsonPropertyName("token")]
-        public Guid Token { get; set; }
+        public string Token { get; set; }
         
         [JsonPropertyName("refresh_token")]
-        public Guid RefreshToken { get; set; }
+        public string RefreshToken { get; set; }
         
         [JsonPropertyName("token_creation_time")]
         public DateTime CreatedOn { get; set; }

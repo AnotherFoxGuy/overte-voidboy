@@ -32,21 +32,18 @@ public class SessionProvider : ISessionProvider
         {
             return (Session)_httpContextAccessor.HttpContext.Items["Session"]!;
         }
-
-        Guid token;
+        
         var asAdmin = false;
-
+        string? token;
         if (_httpContextAccessor.HttpContext is null)
             return null;
         try
         {
             var authHeader =
                 AuthenticationHeaderValue.Parse(_httpContextAccessor.HttpContext?.Request.Headers["Authorization"]);
-            var tokenString = authHeader.Parameter;
+            token = authHeader.Parameter;
 
-            if (tokenString is null) return null;
-
-            if (!Guid.TryParse(tokenString, out token)) return null;
+            if (token is null) return null;
 
             var asAdminParam =
                 (_httpContextAccessor.HttpContext!.Request.Query).FirstOrDefault(x => x.Key.ToLower() == "asadmin");

@@ -7,7 +7,7 @@ public class RootLocationReferenceDto
 
 public class LocationReferenceDto
 {
-    public Guid? NodeId { get; set; }
+    public string? NodeId { get; set; }
     public RootLocationReferenceDto? Root { get; set; }
     public string? Path { get; set; }
     public bool? Online { get; set; }

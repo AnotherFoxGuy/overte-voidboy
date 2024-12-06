@@ -40,9 +40,9 @@ public sealed class DomainsController : V1ApiController
     /// <summary>
     /// Fetch information on provided domain
     /// </summary>
-    [HttpGet("{domainId:guid}")]
+    [HttpGet("{domainId:string}")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetDomain(Guid domainId)
+    public async Task<IActionResult> GetDomain(string domainId)
     {
         var domain = await _domainService.FindById(domainId);
         if (domain is null) throw new DomainNotFoundApiException();
@@ -76,9 +76,9 @@ public sealed class DomainsController : V1ApiController
     /// <summary>
     /// Update domain information
     /// </summary>
-    [HttpPut("{domainId:guid}")]
+    [HttpPut("{domainId:string}")]
     [Authorise]
-    public async Task<IActionResult> UpdateDomain(Guid domainId, [FromBodyOrDefault] UpdateDomainRootModel domainUpdate)
+    public async Task<IActionResult> UpdateDomain(string domainId, [FromBodyOrDefault] UpdateDomainRootModel domainUpdate)
     {
         var updateDto = _mapper.Map<UpdateDomainDto>(domainUpdate.Domain);
         updateDto.DomainId = domainId;
@@ -89,9 +89,9 @@ public sealed class DomainsController : V1ApiController
     /// <summary>
     /// Delete domain
     /// </summary>
-    [HttpDelete("{domainId:guid}")]
+    [HttpDelete("{domainId:string}")]
     [Authorise]
-    public async Task<IActionResult> DeleteDomain(Guid domainId)
+    public async Task<IActionResult> DeleteDomain(string domainId)
     {
         await _domainService.DeleteDomain(domainId);
         return Success();
@@ -100,9 +100,9 @@ public sealed class DomainsController : V1ApiController
     /// <summary>
     /// Fetch specific information about domain
     /// </summary>
-    [HttpGet("{domainId:guid}/field/{fieldName}")]
+    [HttpGet("{domainId:string}/field/{fieldName}")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetDomainProperty(Guid domainId, string fieldName)
+    public async Task<IActionResult> GetDomainProperty(string domainId, string fieldName)
     {
         var value = await _domainService.GetDomainField(domainId, fieldName);
         return Success(value ?? new {});
@@ -111,9 +111,9 @@ public sealed class DomainsController : V1ApiController
     /// <summary>
     /// Update specific information about domain
     /// </summary>
-    [HttpPost("{domainId:guid}/field/{fieldName}")]
+    [HttpPost("{domainId:string}/field/{fieldName}")]
     [Authorise]
-    public async Task<IActionResult> SetDomainProperty(Guid domainId, string fieldName, [FromBodyOrDefault] UpdateFieldRootModel fieldUpdate)
+    public async Task<IActionResult> SetDomainProperty(string domainId, string fieldName, [FromBodyOrDefault] UpdateFieldRootModel fieldUpdate)
     {
         if (fieldUpdate.Set is null || fieldUpdate.Set.HasValue == false)
             return Failure();
@@ -139,9 +139,9 @@ public sealed class DomainsController : V1ApiController
     /// <summary>
     /// Set ICE server address
     /// </summary>
-    [HttpPut("{domainId:guid}/ice_server_address")]
+    [HttpPut("{domainId:string}/ice_server_address")]
     [Authorise]
-    public async Task<IActionResult> SetDomainIceServer(Guid domainId, [FromBodyOrDefault] SetDomainIceServerRootModel updateIceServerModel)
+    public async Task<IActionResult> SetDomainIceServer(string domainId, [FromBodyOrDefault] SetDomainIceServerRootModel updateIceServerModel)
     {
         if (updateIceServerModel.Domain?.IceServerAddress is null )
             return Failure();
@@ -164,9 +164,9 @@ public sealed class DomainsController : V1ApiController
     /// <summary>
     /// Get the public key of the domain
     /// </summary>
-    [HttpGet("{domainId:guid}/public_key")]
+    [HttpGet("{domainId:string}/public_key")]
     [Authorise]
-    public async Task<IActionResult> GetPublicKey(Guid domainId)
+    public async Task<IActionResult> GetPublicKey(string domainId)
     {
         var domain = await _domainService.FindById(domainId);
         if (domain is null) throw new DomainNotFoundApiException();
@@ -179,9 +179,9 @@ public sealed class DomainsController : V1ApiController
     /// <summary>
     /// Update the public key of the domain
     /// </summary>
-    [HttpPut("{domainId:guid}/public_key")]
+    [HttpPut("{domainId:string}/public_key")]
     [Authorise]
-    public async Task<IActionResult> SetPublicKey(Guid domainId)
+    public async Task<IActionResult> SetPublicKey(string domainId)
     {
         var cert = HttpContext.Request.Form.Files.GetFile("public_key");
         if (cert is null)

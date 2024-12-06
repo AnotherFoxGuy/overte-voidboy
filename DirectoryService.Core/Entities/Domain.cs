@@ -12,8 +12,8 @@ public class Domain : BaseEntity
     public MaturityRating Maturity { get; set; }
     public DomainVisibility Visibility { get; set; }
     public string? PublicKey { get; set; }
-    public Guid SessionToken { get; set; }
-    public Guid OwnerUserId { get; set; }
+    public string SessionToken { get; set; }
+    public string OwnerUserId { get; set; }
     public string? IceServerAddress { get; set; }
     public string? Version { get; set; }
     public string? ProtocolVersion { get; set; }

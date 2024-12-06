@@ -34,7 +34,7 @@ public class UserActivationService
     /// <summary>
     /// Process the activation token request
     /// </summary>
-    public async Task ReceiveUserActivationResponse(Guid accountId, Guid verificationToken)
+    public async Task ReceiveUserActivationResponse(string accountId, string verificationToken)
     {
         var token = await _activationTokenRepository.Retrieve(verificationToken);
         if (token is null || token.UserId != accountId) throw new InvalidTokenApiException();

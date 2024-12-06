@@ -8,7 +8,7 @@ public class UserSearchResultDto
     
     //V2 - Standardise naming convention
     [JsonPropertyName("accountid")]
-    public Guid? AccountId { get; set; }
+    public string? AccountId { get; set; }
     public UserImagesDto? Images { get; set; }
     public LocationReferenceDto? Location { get; set; }
 }

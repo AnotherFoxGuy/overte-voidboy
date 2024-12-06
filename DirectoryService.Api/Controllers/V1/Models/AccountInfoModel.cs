@@ -10,9 +10,9 @@ namespace DirectoryService.Api.Controllers.V1.Models;
 
 public class AccountInfoModel
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; }
 
-    [JsonPropertyName("accountId")] public Guid AccountId { get; set; }
+    [JsonPropertyName("accountId")] public string AccountId { get; set; }
 
     public string? Username { get; set; }
     public string? Email { get; set; }

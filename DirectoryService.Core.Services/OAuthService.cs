@@ -49,10 +49,7 @@ public sealed class OAuthService
                 if (request.RefreshToken is null or "")
                     throw new ArgumentException("Refresh token cannot be empty");
 
-                if (!Guid.TryParse(request.RefreshToken, out var refreshToken))
-                    throw new InvalidCredentialsApiException();
-
-                return await GrantTokenFromRefreshToken(refreshToken);
+                return await GrantTokenFromRefreshToken(request.RefreshToken);
 
             case OAuthGrantType.Invalid:
             case OAuthGrantType.AuthorisationCode:
@@ -106,7 +103,7 @@ public sealed class OAuthService
     /// <summary>
     /// Request new session token from refresh token
     /// </summary>
-    private async Task<GrantedTokenDto> GrantTokenFromRefreshToken(Guid refreshToken)
+    private async Task<GrantedTokenDto> GrantTokenFromRefreshToken(string refreshToken)
     {
         var refToken = await _sessionTokenRepository.FindByRefreshToken(refreshToken);
         if (refToken == null)

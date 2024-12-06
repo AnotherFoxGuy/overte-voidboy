@@ -10,16 +10,16 @@ namespace DirectoryService.Api.Controllers.V1.Models;
 
 public class DomainInfoModel
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; }
     
     [JsonPropertyName("domainId")] 
-    public Guid DomainId { get; set; }
+    public string DomainId { get; set; }
     public string? Name { get; set; }
     public string? Visibility { get; set; }
     public int Capacity { get; set; }
     
     [JsonPropertyName("sponsorAccountId")]
-    public Guid SponsorAccountId { get; set; }
+    public string SponsorAccountId { get; set; }
     public string? Label { get; set; }
     public string? NetworkAddress { get; set; }
     public int NetworkPort { get; set; }

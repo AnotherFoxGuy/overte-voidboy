@@ -9,8 +9,8 @@ namespace DirectoryService.Api.Controllers.V1.Models;
 
 public class PlaceInfoSmallModel
 {
-    public Guid Id { get; set; }
-    public Guid PlaceId { get; set; }
+    public string Id { get; set; }
+    public string PlaceId { get; set; }
     public string? Name { get; set; }
     public string? DisplayName { get; set; }
     public string? Visibility { get; set; }

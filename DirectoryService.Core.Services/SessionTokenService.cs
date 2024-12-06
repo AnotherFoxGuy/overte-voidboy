@@ -35,7 +35,7 @@ public class SessionTokenService
     /// <summary>
     /// List all session tokens for user
     /// </summary>
-    public async Task<PaginatedResult<SessionToken>> ListUserTokens(Guid userId, PaginatedRequest page)
+    public async Task<PaginatedResult<SessionToken>> ListUserTokens(string userId, PaginatedRequest page)
     {
         var session = await _sessionProvider.GetRequesterSession();
         
@@ -51,7 +51,7 @@ public class SessionTokenService
     /// <summary>
     /// Request to revoke a token for a user
     /// </summary>
-    public async Task RevokeUserToken(Guid userId, Guid token)
+    public async Task RevokeUserToken(string userId, string token)
     {
         var session = await _sessionProvider.GetRequesterSession();
         

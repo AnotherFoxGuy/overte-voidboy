@@ -29,7 +29,7 @@ public class UserGroupService
     /// <summary>
     /// Create a new usergroup where userId is the owner
     /// </summary>
-    public async Task<UserGroup?> Create(Guid userId, UserGroup userGroup)
+    public async Task<UserGroup?> Create(string userId, UserGroup userGroup)
     {
         var user = await _userRepository.Retrieve(userId);
         if (user == null)
@@ -46,7 +46,7 @@ public class UserGroupService
     /// <summary>
     /// Find a user group by id
     /// </summary>
-    public async Task<UserGroup?> FindById(Guid userGroupId)
+    public async Task<UserGroup?> FindById(string userGroupId)
     {
         return await _userGroupRepository.Retrieve(userGroupId);
     }
@@ -70,7 +70,7 @@ public class UserGroupService
     /// <summary>
     /// Fetch a list of user group members
     /// </summary>
-    public async Task<PaginatedResult<User>> GetGroupMembers(Guid userGroupId, PaginatedRequest page)
+    public async Task<PaginatedResult<User>> GetGroupMembers(string userGroupId, PaginatedRequest page)
     {
         var result = await _userGroupMembersRepository.List(userGroupId, page);
         return result;
@@ -79,7 +79,7 @@ public class UserGroupService
     /// <summary>
     /// Add userId as a member of userGroupId. If the member exists then it will fail silently.
     /// </summary>
-    public async Task AddGroupMember(Guid userGroupId, Guid userId)
+    public async Task AddGroupMember(string userGroupId, string userId)
     {
         await _userGroupMembersRepository.Add(userGroupId, userId);
     }
@@ -87,7 +87,7 @@ public class UserGroupService
     /// <summary>
     /// Add a list of user ids to the user group.  If a member exists then it will fail silently.
     /// </summary>
-    public async Task AddGroupMembers(Guid userGroupId, IEnumerable<Guid> userIds)
+    public async Task AddGroupMembers(string userGroupId, IEnumerable<string> userIds)
     {
         await _userGroupMembersRepository.Add(userGroupId, userIds);
     }
@@ -95,7 +95,7 @@ public class UserGroupService
     /// <summary>
     /// Remove a user group member by id. Group owners cannot be removed.
     /// </summary>
-    public async Task RemoveGroupMember(Guid userGroupId, Guid userId)
+    public async Task RemoveGroupMember(string userGroupId, string userId)
     {
         await _userGroupMembersRepository.Delete(userGroupId, userId);
     }
@@ -103,7 +103,7 @@ public class UserGroupService
     /// <summary>
     /// Remove a group members by id. Group owners cannot be removed.
     /// </summary>
-    public async Task RemoveGroupMembers(Guid userGroupId, IEnumerable<Guid> userIds)
+    public async Task RemoveGroupMembers(string userGroupId, IEnumerable<string> userIds)
     {
         await _userGroupMembersRepository.Delete(userGroupId, userIds);
     }

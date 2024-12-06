@@ -1,9 +1,10 @@
-using Dapper;
+
 using DirectoryService.Core.Entities;
 using DirectoryService.Core.RepositoryInterfaces;
 using DirectoryService.DAL.Infrastructure;
 using DirectoryService.Shared;
 using DirectoryService.Shared.Attributes;
+using Raven.Client.Documents;
 
 namespace DirectoryService.DAL;
 
@@ -12,7 +13,6 @@ public class SessionTokenRepository : BaseRepository<SessionToken>, ISessionToke
 {
     public SessionTokenRepository(DbContext dbContext) : base(dbContext)
     {
-        TableName = "sessionTokens";
     }
     
     /// <summary>
@@ -21,18 +21,9 @@ public class SessionTokenRepository : BaseRepository<SessionToken>, ISessionToke
     public async Task<SessionToken> Create(SessionToken entity)
     {
         using var con = await DbContext.CreateConnectionAsync();
-        var id = await con.QuerySingleAsync<Guid>(
-            @"INSERT INTO sessionTokens (userId, scope, expires)
-                VALUES( @userId, @scope, @expires )
-                RETURNING id;",
-            new
-            {
-                entity.UserId,
-                Scope = entity.Scope,
-                entity.Expires,
-            });
-
-        return await Retrieve(id);
+        await con.StoreAsync(entity);
+        await con.SaveChangesAsync();
+        return entity;
     }
 
     public async Task<SessionToken?> Update(SessionToken entity)
@@ -40,15 +31,10 @@ public class SessionTokenRepository : BaseRepository<SessionToken>, ISessionToke
         throw new NotImplementedException();
     }
     
-    public async Task<SessionToken?> FindByRefreshToken(Guid refreshToken)
+    public async Task<SessionToken?> FindByRefreshToken(string refreshToken)
     {
         using var con = await DbContext.CreateConnectionAsync();
-        var entity = await con.QueryFirstOrDefaultAsync<SessionToken>(
-            @"SELECT * FROM sessionTokens WHERE refreshToken = :refreshToken",
-            new
-            {
-                refreshToken
-            });
+        var entity = con.Query<SessionToken>().FirstOrDefault(x => x.RefreshToken == refreshToken);
 
         return entity;
     }
@@ -56,6 +42,11 @@ public class SessionTokenRepository : BaseRepository<SessionToken>, ISessionToke
     public async Task ExpireTokens()
     {
         using var con = await DbContext.CreateConnectionAsync();
-        await con.ExecuteAsync(@"DELETE FROM sessionTokens WHERE expires < CURRENT_TIMESTAMP");
+        // await con.ExecuteAsync(@"DELETE FROM sessionTokens WHERE expires < CURRENT_TIMESTAMP");
+        var tokens =  await con.Query<SessionToken>()
+            .Where(x => x.Expires < DateTime.Now)
+            .ToListAsync();
+        con.Delete(tokens);
+        await con.SaveChangesAsync();
     }
 }

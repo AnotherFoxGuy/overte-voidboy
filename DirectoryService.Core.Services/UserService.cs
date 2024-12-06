@@ -57,7 +57,7 @@ public sealed class UserService
     /// <summary>
     /// Get user by Id
     /// </summary>
-    public async Task<User?> FindById(Guid id)
+    public async Task<User?> FindById(string id)
     {
         return await _userRepository.Retrieve(id);
     }
@@ -69,15 +69,10 @@ public sealed class UserService
     /// <returns>Either the user entity or null</returns>
     public async Task<User?> FindUser(string needle)
     {
-        if (Guid.TryParse(needle, out var userId))
-        {
-            return await _userRepository.Retrieve(userId);
-        }
-
-        return await _userRepository.FindByUsername(needle.ToLower());
+        return await _userRepository.Retrieve(needle) ?? await _userRepository.FindByUsername(needle.ToLower());
     }
 
-    public async Task<UserInfoDto?> GetUserInfo(Guid userId)
+    public async Task<UserInfoDto?> GetUserInfo(string userId)
     {
         var user = await _userRepository.Retrieve(userId);
         if (user is null) return null;
@@ -90,7 +85,7 @@ public sealed class UserService
         {
             location = new UserLocationDto()
             {
-                Domain = await _domainRepository.Retrieve(presence.DomainId!.Value),
+                Domain = await _domainRepository.Retrieve(presence.DomainId!),
                 Path = presence.Path
             };
         }
@@ -124,7 +119,7 @@ public sealed class UserService
         return userInfo;
     }
 
-    public async Task<List<string>> ConvertUserIdsToUsernames(List<Guid> userIds)
+    public async Task<List<string>> ConvertUserIdsToUsernames(List<string> userIds)
     {
         return await _userRepository.UserIdsToUsernames(userIds);
     }
@@ -161,14 +156,14 @@ public sealed class UserService
                 },
                 Location = new LocationReferenceDto()
                 {
-                    NodeId = Guid.Empty,
+                    NodeId = string.Empty,
                     Online = false,
                     Path = "",
                     Root = new RootLocationReferenceDto()
                     {
                         Domain = new DomainReferenceDto()
                         {
-                            Id = Guid.Empty,
+                            Id = string.Empty,
                             IceServerAddress = "",
                             Name = "",
                             NetworkAddress = "",
@@ -292,7 +287,7 @@ public sealed class UserService
     /// <summary>
     /// Delete a user
     /// </summary>
-    public async Task DeleteUser(Guid userId)
+    public async Task DeleteUser(string userId)
     {
         var session = await _sessionProvider.GetRequesterSession();
         if (session is null || !session.AsAdmin) throw new UnauthorisedApiException();
@@ -308,7 +303,7 @@ public sealed class UserService
     /// <summary>
     /// Update heartbeat for user
     /// </summary>
-    public async Task UpdatePublicKey(Guid userId, Stream publicKey)
+    public async Task UpdatePublicKey(string userId, Stream publicKey)
     {
         var user = await _userRepository.Retrieve(userId);
         if (user is null)
@@ -321,8 +316,8 @@ public sealed class UserService
             presence = new UserPresence()
             {
                 Id = userId,
-                DomainId = Guid.Empty,
-                PlaceId = Guid.Empty,
+                DomainId = string.Empty,
+                PlaceId = string.Empty,
                 NetworkAddress = ""
             };
         }
@@ -336,7 +331,7 @@ public sealed class UserService
     /// <summary>
     /// Set a new password for user
     /// </summary>
-    private async Task UpdatePassword(Guid userId, string newPassword)
+    private async Task UpdatePassword(string userId, string newPassword)
     {
         var user = await _userRepository.Retrieve(userId);
         if (user is null)
@@ -356,7 +351,7 @@ public sealed class UserService
     /// <summary>
     /// Update username for user
     /// </summary>
-    private async Task UpdateUsername(Guid userId, string username)
+    private async Task UpdateUsername(string userId, string username)
     {
         var user = await _userRepository.Retrieve(userId);
         if (user is null)
@@ -380,7 +375,7 @@ public sealed class UserService
     /// <summary>
     /// Update username for user
     /// </summary>
-    private async Task UpdateEmail(Guid userId, string email)
+    private async Task UpdateEmail(string userId, string email)
     {
         var user = await _userRepository.Retrieve(userId);
         if (user is null)
@@ -417,7 +412,7 @@ public sealed class UserService
     /// <summary>
     /// Process heartbeat/location update for userId
     /// </summary>
-    public async Task<UserPresence> ProcessHeartbeat(Guid userId, UserHeartbeatDto? userHeartbeat)
+    public async Task<UserPresence> ProcessHeartbeat(string userId, UserHeartbeatDto? userHeartbeat)
     {
         var user = await _userRepository.Retrieve(userId);
         if (user is null)
@@ -430,8 +425,8 @@ public sealed class UserService
             presence = new UserPresence()
             {
                 Id = userId,
-                DomainId = Guid.Empty,
-                PlaceId = Guid.Empty,
+                DomainId = string.Empty,
+                PlaceId = string.Empty,
                 NetworkAddress = ""
             };
         }
@@ -463,7 +458,7 @@ public sealed class UserService
         return await ProcessHeartbeat(session.UserId, userHeartbeat);
     }
 
-    public async Task<UserProfileDto> GetUserProfile(Guid userId)
+    public async Task<UserProfileDto> GetUserProfile(string userId)
     {
         var user = await _userRepository.Retrieve(userId);
         if (user is null)
@@ -484,7 +479,7 @@ public sealed class UserService
         return await GetUserProfile(session.UserId);
     }
 
-    public async Task UpdateUserByField(Guid userId, string fieldName, IEnumerable<string> values)
+    public async Task UpdateUserByField(string userId, string fieldName, IEnumerable<string> values)
     {
         if (!values.Any())
             return;
@@ -588,7 +583,7 @@ public sealed class UserService
     
     private class UpdateUserFields
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; }
     
         [EditableField("username", new [] { Permission.Owner, Permission.Admin })]
         public string? Username { get; set; }

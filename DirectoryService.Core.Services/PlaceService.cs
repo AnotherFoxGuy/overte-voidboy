@@ -105,7 +105,7 @@ public class PlaceService
         return placeEntity;
     }
 
-    public async Task DeletePlace(Guid placeId)
+    public async Task DeletePlace(string placeId)
     {
         var session = await _sessionProvider.GetRequesterSession();
         if (session is null ) throw new UnauthorisedApiException();

@@ -35,7 +35,8 @@ public class ServiceConfiguration
     
     public class DbConfig
     {
-        public string? ConnectionString { get; set; }
+        public string? ConnectionUrl { get; set; }
+        public string? DatabaseName { get; set; }
     }
     
     public class DirectoryServiceConfig

@@ -22,7 +22,7 @@ public class UserPresenceService
         _sessionProvider = sessionProvider;
     }
 
-    public async Task<UserPresence?> GetUserPresence(Guid userId)
+    public async Task<UserPresence?> GetUserPresence(string userId)
     {
         return await _userPresenceRepository.Retrieve(userId);
     }

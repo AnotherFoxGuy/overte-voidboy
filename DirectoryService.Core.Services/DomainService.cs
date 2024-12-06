@@ -67,7 +67,7 @@ public class DomainService
         return false;
     }
 
-    public async Task<Domain?> FindById(Guid id)
+    public async Task<Domain?> FindById(string id)
     {
         return await _domainRepository.Retrieve(id);
     }
@@ -192,7 +192,7 @@ public class DomainService
         return domain;
     }
 
-    public async Task DeleteDomain(Guid domainId)
+    public async Task DeleteDomain(string domainId)
     {
         var session = await _sessionProvider.GetRequesterSession();
         if (session is null ) throw new UnauthorisedApiException();
@@ -221,7 +221,7 @@ public class DomainService
         await _sessionTokenRepository.Delete(domain.SessionToken);
     }
 
-    public async Task<List<User>> GetDomainManagers(Guid domainId)
+    public async Task<List<User>> GetDomainManagers(string domainId)
     {
         var session = await _sessionProvider.GetRequesterSession();
         if (session is null ) throw new UnauthorisedApiException();
@@ -242,7 +242,7 @@ public class DomainService
     /// <summary>
     /// Replace current domain managers with provided list
     /// </summary>
-    private async Task SetDomainManagers(Guid domainId, List<User> managers)
+    private async Task SetDomainManagers(string domainId, List<User> managers)
     {
         // Remove old managers
         var currentManagers = await _domainManagerRepository.List(domainId, PaginatedRequest.All());
@@ -257,7 +257,7 @@ public class DomainService
     /// <summary>
     /// Retrieve a domain field
     /// </summary>
-    public async Task<object?> GetDomainField(Guid domainId, string field)
+    public async Task<object?> GetDomainField(string domainId, string field)
     {
         var domain = await _domainRepository.Retrieve(domainId);
         
@@ -326,7 +326,7 @@ public class DomainService
         return null;
     }
 
-    public async Task UpdateDomainByField(Guid domainId, string fieldName, IEnumerable<string> values)
+    public async Task UpdateDomainByField(string domainId, string fieldName, IEnumerable<string> values)
     {
         if (!values.Any())
             return;
@@ -339,7 +339,7 @@ public class DomainService
     /// <summary>
     /// Update the domain's public key. Expects key in PKCS1 DER (binary) form
     /// </summary>
-    public async Task UpdatePublicKey(Guid domainId, Stream publicKey)
+    public async Task UpdatePublicKey(string domainId, Stream publicKey)
     {
         var session = await _sessionProvider.GetRequesterSession();
         if (session is null ) throw new UnauthorisedApiException();
@@ -357,7 +357,7 @@ public class DomainService
         await _domainRepository.Update(domain);
     }
     
-    public async Task UpdateIceServerAddress(Guid domainId, string iceServerAddress)
+    public async Task UpdateIceServerAddress(string domainId, string iceServerAddress)
     {
         var session = await _sessionProvider.GetRequesterSession();
         if (session is null ) throw new UnauthorisedApiException();

@@ -75,9 +75,9 @@ public sealed class AccountController : V1ApiController
     /// <summary>
     /// Update account
     /// </summary>
-    [HttpPost("{accountId:guid}")]
+    [HttpPost("{accountId:string}")]
     [Authorise]
-    public async Task<IActionResult> UpdateAccount(Guid accountId, [FromBody] UpdateAccountDto updateAccount)
+    public async Task<IActionResult> UpdateAccount(string accountId, [FromBody] UpdateAccountDto updateAccount)
     {
         updateAccount.AccountId = accountId;
         
@@ -104,9 +104,9 @@ public sealed class AccountController : V1ApiController
     /// Fetch specific account property by field name
     /// </summary>
     // Is this in use?
-    [HttpGet("{accountId:guid}/field/{fieldName}")]
+    [HttpGet("{accountId:string}/field/{fieldName}")]
     [Authorise]
-    public async Task<IActionResult> GetAccountField(Guid accountId, string fieldName)
+    public async Task<IActionResult> GetAccountField(string accountId, string fieldName)
     {
         //TODO
         throw new NotImplementedException();
@@ -116,9 +116,9 @@ public sealed class AccountController : V1ApiController
     /// Update account property by field name
     /// </summary>
     // Is this in use?
-    [HttpPost("{accountId:guid}/field/{fieldName}")]
+    [HttpPost("{accountId:string}/field/{fieldName}")]
     [Authorise]
-    public async Task<IActionResult> SetAccountField(Guid accountId, string fieldName, [FromBodyOrDefault] UpdateFieldRootModel fieldUpdate)
+    public async Task<IActionResult> SetAccountField(string accountId, string fieldName, [FromBodyOrDefault] UpdateFieldRootModel fieldUpdate)
     {
         if (fieldUpdate.Set is null || fieldUpdate.Set.HasValue == false)
             return Failure();
@@ -161,9 +161,9 @@ public sealed class AccountController : V1ApiController
     /// <summary>
     /// Delete an account's token
     /// </summary>
-    [HttpDelete("{userReference}/tokens/{token:guid}")]
+    [HttpDelete("{userReference}/tokens/{token:string}")]
     [Authorise]
-    public async Task<IActionResult> DeleteToken(string userReference, Guid token)
+    public async Task<IActionResult> DeleteToken(string userReference, string token)
     {
         var user = await _userService.FindUser(userReference);
         if (user is null)
@@ -181,15 +181,12 @@ public sealed class AccountController : V1ApiController
     [AllowAnonymous]
     public async Task<IActionResult> EmailVerificationEndpoint([FromQuery] EmailVerificationModel verification)
     {
-        if (!Guid.TryParse(verification.AccountId, out var accountId))
-            return new RedirectResult(_configuration.Registration!.EmailVerificationFailRedirect!);
-
-        if (!Guid.TryParse(verification.VerificationToken, out var verificationToken))
+        if (verification.AccountId == null || verification.VerificationToken == null)
             return new RedirectResult(_configuration.Registration!.EmailVerificationFailRedirect!);
 
         try
         {
-            await _userActivationService.ReceiveUserActivationResponse(accountId, verificationToken);
+            await _userActivationService.ReceiveUserActivationResponse(verification.AccountId, verification.VerificationToken);
             return new RedirectResult(_configuration.Registration!.EmailVerificationSuccessRedirect!);
         }
         catch (Exception e)

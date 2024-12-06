@@ -56,9 +56,9 @@ public sealed class PlacesController : V1ApiController
     /// <summary>
     /// Delete place
     /// </summary>
-    [HttpDelete("{placeId:guid}")]
+    [HttpDelete("{placeId:string}")]
     [Authorise]
-    public async Task<IActionResult> DeletePlace(Guid placeId)
+    public async Task<IActionResult> DeletePlace(string placeId)
     {
         await _placeService.DeletePlace(placeId);
         return Success();
@@ -67,9 +67,9 @@ public sealed class PlacesController : V1ApiController
     /// <summary>
     /// Update place information
     /// </summary>
-    [HttpPut("{placeId:guid}")]
+    [HttpPut("{placeId:string}")]
     [Authorise]
-    public async Task<IActionResult> UpdatePlaceInfo(Guid placeId)
+    public async Task<IActionResult> UpdatePlaceInfo(string placeId)
     {
         //TODO
         throw new NotImplementedException();
@@ -78,9 +78,9 @@ public sealed class PlacesController : V1ApiController
     /// <summary>
     /// Get place information by field name
     /// </summary>
-    [HttpGet("{placeId:guid}/field/{fieldName}")]
+    [HttpGet("{placeId:string}/field/{fieldName}")]
     [Authorise]
-    public async Task<IActionResult> GetPlaceInfoByField(Guid placeId, string fieldName)
+    public async Task<IActionResult> GetPlaceInfoByField(string placeId, string fieldName)
     {
         //TODO
         throw new NotImplementedException();
@@ -89,9 +89,9 @@ public sealed class PlacesController : V1ApiController
     /// <summary>
     /// Update place information by field name
     /// </summary>
-    [HttpPost("{placeId:guid}/field/{fieldName}")]
+    [HttpPost("{placeId:string}/field/{fieldName}")]
     [Authorise]
-    public async Task<IActionResult> UpdatePlaceInfoByField(Guid placeId, string fieldName)
+    public async Task<IActionResult> UpdatePlaceInfoByField(string placeId, string fieldName)
     {
         //TODO
         throw new NotImplementedException();

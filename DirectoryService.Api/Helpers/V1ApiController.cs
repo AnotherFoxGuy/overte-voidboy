@@ -56,7 +56,7 @@ public abstract class V1ApiController : ControllerBase
     /// <summary>
     /// Restrict the action to be performed only to self, unless asAdmin is defined and caller is an admin
     /// </summary>
-    protected void RestrictToSelfOrAdmin(Guid userId)
+    protected void RestrictToSelfOrAdmin(string userId)
     {
         var queryParams =
             Request.Query.Keys.ToDictionary<string?, string, string>(key => key.ToLower(), key => Request.Query[key]!);

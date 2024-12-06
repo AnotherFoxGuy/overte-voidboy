@@ -10,10 +10,10 @@ namespace DirectoryService.Api.Controllers.V1.Models;
 
 public class DomainInfoModelV1
 {
-    public Guid Id { get; set; }
+    public string Id { get; set; }
     
     [JsonPropertyName("domainId")] 
-    public Guid DomainId { get; set; }
+    public string DomainId { get; set; }
     public string? Name { get; set; }
     public string? Visibility { get; set; }
     public string? WorldName { get; set; }
@@ -22,7 +22,7 @@ public class DomainInfoModelV1
     public List<PlaceInfoSmallModel>? OwnerPlaces { get; set; }
     
     [JsonPropertyName("sponsorAccountId")]
-    public Guid SponsorAccountId { get; set; }
+    public string SponsorAccountId { get; set; }
     public string? IceServerAddress { get; set; }
     public string? Version { get; set; }
     public string? ProtocolVersion { get; set; }

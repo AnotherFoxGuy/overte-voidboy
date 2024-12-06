@@ -1,4 +1,3 @@
-using Dapper;
 using DirectoryService.Core.Entities;
 using DirectoryService.Core.RepositoryInterfaces;
 using DirectoryService.DAL.Infrastructure;
@@ -7,27 +6,16 @@ using DirectoryService.Shared.Attributes;
 namespace DirectoryService.DAL;
 
 [ScopedDependency]
-public class ActivationTokenRepository : BaseRepository<ActivationToken>, IActivationTokenRepository
+public class ActivationTokenRepository(DbContext dbContext)
+    : BaseRepository<ActivationToken>(dbContext), IActivationTokenRepository
 {
-    public ActivationTokenRepository(DbContext dbContext) : base(dbContext)
-    {
-        TableName = "activationTokens";
-    }
-
     public async Task<ActivationToken> Create(ActivationToken entity)
     {
         using var con = await DbContext.CreateConnectionAsync();
-        var id = await con.QuerySingleAsync<Guid>(
-            @"INSERT INTO activationTokens (userId, expires)
-                VALUES( @userId, @expires )
-                RETURNING id;",
-            new
-            {
-                entity.UserId,
-                entity.Expires,
-            });
+        await con.StoreAsync(entity);
+        await con.SaveChangesAsync();
 
-        return await Retrieve(id);
+        return entity;
     }
 
     public async Task<ActivationToken?> Update(ActivationToken entity)
@@ -38,6 +26,6 @@ public class ActivationTokenRepository : BaseRepository<ActivationToken>, IActiv
     public async Task ExpireTokens()
     {
         using var con = await DbContext.CreateConnectionAsync();
-        await con.ExecuteAsync(@"DELETE FROM activationTokens WHERE expires < CURRENT_TIMESTAMP");
+        // await con.ExecuteAsync(@"DELETE FROM activationTokens WHERE expires < CURRENT_TIMESTAMP");
     }
 }
